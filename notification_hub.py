@@ -91,7 +91,8 @@ if __name__ == '__main__':
         on_name_lost,
     )
 
-    loop = GLib.MainLoop()
-    loop.run()
-
-    Gio.bus_unown_name(owner_id)
+    try:
+        loop = GLib.MainLoop()
+        loop.run()
+    finally:
+        Gio.bus_unown_name(owner_id)
