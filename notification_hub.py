@@ -1,11 +1,17 @@
 # https://github.com/dunst-project/dunst/blob/master/src/dbus.c
 # https://lazka.github.io/pgi-docs/GLib-2.0/classes/VariantType.html
 # https://stackoverflow.com/questions/28949009/glib-gio-critical-error-while-invoking-a-method-on-dbus-interface
+# https://lazka.github.io/pgi-docs/AyatanaAppIndicator3-0.1/classes/Indicator.html
 
 import sys
 
+import gi
+
+gi.require_version('AyatanaAppIndicator3', '0.1')
+
 from gi.repository import Gio
 from gi.repository import GLib
+from gi.repository import AyatanaAppIndicator3 as AppIndicator3
 
 VERSION = '0.0.0'
 
@@ -50,6 +56,7 @@ INTROSPECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
 </node>"""
 
 next_id = 1
+indicator = None
 
 
 def on_call(conn, sender, path, interface, method, parameters, invocation, user_data=None):
@@ -59,6 +66,7 @@ def on_call(conn, sender, path, interface, method, parameters, invocation, user_
         reply = GLib.Variant('(as)', [['actions', 'body', 'body-hyperlinks']])
     elif method == 'Notify':
         print(sender, parameters)
+        indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
         reply = GLib.Variant('(u)', [next_id])
         next_id += 1
     elif method == 'CloseNotification':
@@ -95,6 +103,13 @@ if __name__ == '__main__':
         on_name_acquired,
         on_name_lost,
     )
+
+    indicator = AppIndicator3.Indicator.new(
+        'notify',
+        'user-available',
+        AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
+    )
+    indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
 
     try:
         loop = GLib.MainLoop()
