@@ -49,7 +49,6 @@ INTROSPECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
    </interface>
 </node>"""
 
-node_info = Gio.DBusNodeInfo.new_for_xml(INTROSPECTION_XML)
 next_id = 1
 
 
@@ -74,6 +73,7 @@ def on_call(conn, sender, path, interface, method, parameters, invocation, user_
 
 
 def on_bus_acquired(conn, name, user_data=None):
+    node_info = Gio.DBusNodeInfo.new_for_xml(INTROSPECTION_XML)
     conn.register_object(FDN_PATH, node_info.interfaces[0], on_call)
 
 
