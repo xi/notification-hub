@@ -77,6 +77,10 @@ def on_bus_acquired(conn, name, user_data=None):
     conn.register_object(FDN_PATH, node_info.interfaces[0], on_call)
 
 
+def on_name_acquired(conn, name, user_data=None):
+    print(f'Aquired name {name}')
+
+
 def on_name_lost(conn, name, user_data=None):
     sys.exit('name lost')
 
@@ -87,7 +91,7 @@ if __name__ == '__main__':
         FDN_IFAC,
         Gio.BusNameOwnerFlags.NONE,
         on_bus_acquired,
-        None,
+        on_name_acquired,
         on_name_lost,
     )
 
