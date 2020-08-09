@@ -55,7 +55,8 @@ next_id = 1
 def on_call(conn, sender, path, interface, method, parameters, invocation, user_data=None):
     global next_id
     if method == 'GetCapabilities':
-        reply = GLib.Variant('()', [])
+        # announce fake capabilities to avoid firefox fallback
+        reply = GLib.Variant('(as)', [['actions', 'body', 'body-hyperlinks']])
     elif method == 'Notify':
         print(sender, parameters)
         reply = GLib.Variant('(u)', [next_id])
