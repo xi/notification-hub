@@ -9,9 +9,9 @@ import gi
 
 gi.require_version('AyatanaAppIndicator3', '0.1')
 
-from gi.repository import Gio
-from gi.repository import GLib
-from gi.repository import AyatanaAppIndicator3 as AppIndicator3
+from gi.repository import Gio  # noqa
+from gi.repository import GLib  # noqa
+from gi.repository import AyatanaAppIndicator3 as AppIndicator3  # noqa
 
 VERSION = '0.0.0'
 
@@ -59,13 +59,14 @@ next_id = 1
 indicator = None
 
 
-def on_call(conn, sender, path, interface, method, parameters, invocation, user_data=None):
+def on_call(
+    conn, sender, path, interface, method, params, invocation, user_data=None
+):
     global next_id
     if method == 'GetCapabilities':
         # announce fake capabilities to avoid firefox fallback
         reply = GLib.Variant('(as)', [['actions', 'body', 'body-hyperlinks']])
     elif method == 'Notify':
-        print(sender, parameters)
         indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
         reply = GLib.Variant('(u)', [next_id])
         next_id += 1
