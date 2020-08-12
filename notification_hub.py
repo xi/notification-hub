@@ -8,9 +8,11 @@ import sys
 import gi
 
 gi.require_version('AyatanaAppIndicator3', '0.1')
+gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio  # noqa
 from gi.repository import GLib  # noqa
+from gi.repository import Gtk  # noqa
 from gi.repository import AyatanaAppIndicator3 as AppIndicator3  # noqa
 
 VERSION = '0.0.0'
@@ -57,6 +59,49 @@ INTROSPECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
 
 next_id = 1
 indicator = None
+menu = None
+threads = {}
+
+
+def clear_thread(item, app_name):
+    del threads[app_name]
+    menu.remove(item)
+    if len(menu) == 0:
+        indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
+
+
+def on_add_notification(params, id):
+    app_name = params[0]
+    replaces_id = params[1]
+    summary = params[3]
+
+    label = f'{app_name}: {summary}'
+    thread = threads.get(app_name)
+
+    if thread:
+        if replaces_id in thread['ids']:
+            thread['ids'].remove(replaces_id)
+        thread['ids'].add(id)
+        thread['menuitem'].set_label(label)
+    else:
+        item = Gtk.MenuItem(label=label)
+        item.connect('activate', clear_thread, app_name)
+        menu.append(item)
+        menu.show_all()
+        indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
+
+        threads[app_name] = {
+            'menuitem': item,
+            'ids': {id},
+        }
+
+
+def on_close_notification(id):
+    for app_name, thread in list(threads.items()):
+        if id in thread['ids']:
+            thread['ids'].remove(id)
+            if not thread['ids']:
+                clear_thread(thread['menuitem'], app_name)
 
 
 def on_call(
@@ -67,10 +112,11 @@ def on_call(
         # announce fake capabilities to avoid firefox fallback
         reply = GLib.Variant('(as)', [['actions', 'body', 'body-hyperlinks']])
     elif method == 'Notify':
-        indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
+        on_add_notification(params, next_id)
         reply = GLib.Variant('(u)', [next_id])
         next_id += 1
     elif method == 'CloseNotification':
+        on_close_notification(*params)
         reply = None
     elif method == 'GetServerInformation':
         info = ['notification-hub', 'xi', VERSION, '1.2']
@@ -111,6 +157,8 @@ if __name__ == '__main__':
         AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
     )
     indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
+    menu = Gtk.Menu()
+    indicator.set_menu(menu)
 
     try:
         loop = GLib.MainLoop()
