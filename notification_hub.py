@@ -138,7 +138,10 @@ def on_name_acquired(conn, name, user_data=None):
 
 
 def on_name_lost(conn, name, user_data=None):
-    sys.exit('name lost')
+    sys.exit(
+        f'Could not aquire name {FDN_IFAC}. '
+        f'Is some other notification daemon running?'
+    )
 
 
 if __name__ == '__main__':
