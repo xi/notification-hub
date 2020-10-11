@@ -70,13 +70,29 @@ def clear_thread(item, key):
         indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
 
 
+def format_label(params):
+    app_name = params[0]
+    summary = params[3]
+    body = params[4]
+    hints = params[6]
+    desktop_entry = hints.get('desktop-entry')
+
+    _app_name = app_name or desktop_entry
+    if _app_name:
+        if summary != _app_name:
+            return '%s: %s' % (_app_name, summary)
+        else:
+            return '%s: %s' % (_app_name, body[:40])
+    else:
+        return summary
+
+
 def on_add_notification(params, id):
     app_name = params[0]
     replaces_id = params[1]
-    summary = params[3]
     hints = params[6]
 
-    label = f'{app_name}: {summary}'
+    label = format_label(params)
     key = hints.get('desktop-entry', app_name)
     thread = threads.get(key)
 
