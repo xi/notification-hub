@@ -63,8 +63,8 @@ menu = None
 threads = {}
 
 
-def clear_thread(item, app_name):
-    del threads[app_name]
+def clear_thread(item, key):
+    del threads[key]
     menu.remove(item)
     if len(menu) == 0:
         indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
@@ -74,9 +74,11 @@ def on_add_notification(params, id):
     app_name = params[0]
     replaces_id = params[1]
     summary = params[3]
+    hints = params[6]
 
     label = f'{app_name}: {summary}'
-    thread = threads.get(app_name)
+    key = hints.get('desktop-entry', app_name)
+    thread = threads.get(key)
 
     if thread:
         if replaces_id in thread['ids']:
@@ -85,23 +87,23 @@ def on_add_notification(params, id):
         thread['menuitem'].set_label(label)
     else:
         item = Gtk.MenuItem(label=label)
-        item.connect('activate', clear_thread, app_name)
+        item.connect('activate', clear_thread, key)
         menu.append(item)
         menu.show_all()
         indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
 
-        threads[app_name] = {
+        threads[key] = {
             'menuitem': item,
             'ids': {id},
         }
 
 
 def on_close_notification(id):
-    for app_name, thread in list(threads.items()):
+    for key, thread in list(threads.items()):
         if id in thread['ids']:
             thread['ids'].remove(id)
             if not thread['ids']:
-                clear_thread(thread['menuitem'], app_name)
+                clear_thread(thread['menuitem'], key)
 
 
 def on_call(
