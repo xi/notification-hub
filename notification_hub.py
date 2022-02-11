@@ -71,34 +71,25 @@ def clear_thread(item, key):
 
 
 def format_label(params):
-    app_name = params[0]
-    summary = params[3]
-    body = params[4]
-    hints = params[6]
-    desktop_entry = hints.get('desktop-entry')
-
-    _app_name = app_name or desktop_entry
+    desktop_entry = params['hints'].get('desktop-entry')
+    _app_name = params['app_name'] or desktop_entry
     if _app_name:
-        if summary != _app_name:
-            return '%s: %s' % (_app_name, summary)
+        if params['summary'] != _app_name:
+            return '%s: %s' % (_app_name, params['summary'])
         else:
-            return '%s: %s' % (_app_name, body[:40])
+            return '%s: %s' % (_app_name, params['body'][:40])
     else:
-        return summary
+        return params['summary']
 
 
 def on_add_notification(params, id):
-    app_name = params[0]
-    replaces_id = params[1]
-    hints = params[6]
-
     label = format_label(params)
-    key = hints.get('desktop-entry', app_name)
+    key = params['hints'].get('desktop-entry', params['app_name'])
     thread = threads.get(key)
 
     if thread:
-        if replaces_id in thread['ids']:
-            thread['ids'].remove(replaces_id)
+        if params['replaces_id'] in thread['ids']:
+            thread['ids'].remove(params['replaces_id'])
         thread['ids'].add(id)
         thread['menuitem'].set_label(label)
     else:
@@ -130,7 +121,16 @@ def on_call(
         # announce fake capabilities to avoid firefox fallback
         reply = GLib.Variant('(as)', [['actions', 'body', 'body-hyperlinks']])
     elif method == 'Notify':
-        on_add_notification(params, next_id)
+        on_add_notification({
+            'app_name': params[0],
+            'replaces_id': params[1],
+            'app_icon': params[2],
+            'summary': params[3],
+            'body': params[4],
+            'actions': params[5],
+            'hints': params[6],
+            'expire_timeout': params[7],
+        }, next_id)
         reply = GLib.Variant('(u)', [next_id])
         next_id += 1
     elif method == 'CloseNotification':
