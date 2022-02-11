@@ -17,6 +17,8 @@ from gi.repository import AyatanaAppIndicator3 as AppIndicator3  # noqa
 
 VERSION = '0.0.0'
 
+IGNORE = []
+
 FDN_PATH = '/org/freedesktop/Notifications'
 FDN_IFAC = 'org.freedesktop.Notifications'
 
@@ -82,7 +84,21 @@ def format_label(params):
         return params['summary']
 
 
+def matches_rule(params, rule):
+    for key, pattern in rule.items():
+        if key == 'hints':
+            for k, p in pattern.items():
+                if p != params['hints'].get(k):
+                    return False
+        elif pattern != params[key]:
+            return False
+    return True
+
+
 def on_add_notification(params, id):
+    if any(matches_rule(params, rule) for rule in IGNORE):
+        return
+
     label = format_label(params)
     key = params['hints'].get('desktop-entry', params['app_name'])
     thread = threads.get(key)
