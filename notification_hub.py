@@ -14,10 +14,8 @@ __version__ = '0.0.0'
 
 IGNORE = []
 
-FDN_PATH = '/org/freedesktop/Notifications'
-FDN_IFAC = 'org.freedesktop.Notifications'
-
-INTROSPECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
+NODE_INFO = Gio.DBusNodeInfo.new_for_xml("""
+<?xml version="1.0" encoding="UTF-8"?>
 <node name="/org/freedesktop/Notifications">
     <interface name="org.freedesktop.Notifications">
         <method name="GetCapabilities">
@@ -44,7 +42,7 @@ INTROSPECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
             <arg direction="out" name="spec_version"    type="s"/>
         </method>
    </interface>
-</node>"""
+</node>""")
 
 next_id = 1
 indicator = None
@@ -142,8 +140,11 @@ def on_call(
 
 
 def on_bus_acquired(conn, name, user_data=None):
-    node_info = Gio.DBusNodeInfo.new_for_xml(INTROSPECTION_XML)
-    conn.register_object(FDN_PATH, node_info.interfaces[0], on_call)
+    conn.register_object(
+        '/org/freedesktop/Notifications',
+        NODE_INFO.interfaces[0],
+        on_call,
+    )
 
 
 def on_name_lost(conn, name, user_data=None):
@@ -156,7 +157,7 @@ def on_name_lost(conn, name, user_data=None):
 if __name__ == '__main__':
     owner_id = Gio.bus_own_name(
         Gio.BusType.SESSION,
-        FDN_IFAC,
+        NODE_INFO.interfaces[0].name,
         Gio.BusNameOwnerFlags.NONE,
         on_bus_acquired,
         None,
