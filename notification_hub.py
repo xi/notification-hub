@@ -1,8 +1,3 @@
-# https://github.com/dunst-project/dunst/blob/master/src/dbus.c
-# https://lazka.github.io/pgi-docs/GLib-2.0/classes/VariantType.html
-# https://stackoverflow.com/questions/28949009/glib-gio-critical-error-while-invoking-a-method-on-dbus-interface
-# https://lazka.github.io/pgi-docs/AyatanaAppIndicator3-0.1/classes/Indicator.html
-
 import sys
 
 import gi
@@ -15,7 +10,7 @@ from gi.repository import GLib  # noqa
 from gi.repository import Gtk  # noqa
 from gi.repository import AyatanaAppIndicator3 as AppIndicator3  # noqa
 
-VERSION = '0.0.0'
+__version__ = '0.0.0'
 
 IGNORE = []
 
@@ -48,14 +43,6 @@ INTROSPECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>
             <arg direction="out" name="version"         type="s"/>
             <arg direction="out" name="spec_version"    type="s"/>
         </method>
-        <signal name="NotificationClosed">
-            <arg name="id"         type="u"/>
-            <arg name="reason"     type="u"/>
-        </signal>
-        <signal name="ActionInvoked">
-            <arg name="id"         type="u"/>
-            <arg name="action_key" type="s"/>
-        </signal>
    </interface>
 </node>"""
 
@@ -153,7 +140,7 @@ def on_call(
         on_close_notification(*params)
         reply = None
     elif method == 'GetServerInformation':
-        info = ['notification-hub', 'xi', VERSION, '1.2']
+        info = ['notification-hub', 'xi', __version__, '1.2']
         reply = GLib.Variant('(ssss)', info)
     else:
         print(f'Unknown method: {method}')
@@ -167,14 +154,10 @@ def on_bus_acquired(conn, name, user_data=None):
     conn.register_object(FDN_PATH, node_info.interfaces[0], on_call)
 
 
-def on_name_acquired(conn, name, user_data=None):
-    print(f'Aquired name {name}')
-
-
 def on_name_lost(conn, name, user_data=None):
     sys.exit(
-        f'Could not aquire name {FDN_IFAC}. '
-        f'Is some other notification daemon running?'
+        f'Could not aquire name {name}. '
+        f'Is some other service blocking it?'
     )
 
 
@@ -184,16 +167,17 @@ if __name__ == '__main__':
         FDN_IFAC,
         Gio.BusNameOwnerFlags.NONE,
         on_bus_acquired,
-        on_name_acquired,
+        None,
         on_name_lost,
     )
 
     indicator = AppIndicator3.Indicator.new(
-        'notify',
+        'notifications',
         'user-available',
         AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
     )
     indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
+    indicator.set_title('Notifications')
     menu = Gtk.Menu()
     indicator.set_menu(menu)
 

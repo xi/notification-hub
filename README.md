@@ -12,9 +12,9 @@ Distraction-free notification daemon for linux inspired by github.
 ## Dependencies
 
 -	python3-gi
--	gir1.2-glib-2.0
+-	[gir1.2-glib-2.0](https://docs.gtk.org/gio/)
 -	gir1.2-gtk-3.0
--	gir1.2-ayatanaappindicator3-0.1
+-	[gir1.2-ayatanaappindicator3-0.1](https://lazka.github.io/pgi-docs/AyatanaAppIndicator3-0.1/classes/Indicator.html)
 
 ## Known Limitations
 
