@@ -111,6 +111,7 @@ def on_call(
     conn, sender, path, interface, method, params, invocation, user_data=None
 ):
     global next_id
+
     if method == 'GetCapabilities':
         # announce fake capabilities to avoid firefox fallback
         reply = GLib.Variant('(as)', [['actions', 'body', 'body-hyperlinks']])
@@ -138,8 +139,6 @@ def on_call(
         info = ['notification-hub', 'xi', __version__, '1.2']
         invocation.return_value(GLib.Variant('(ssss)', info))
         conn.flush()
-    else:
-        print(f'Unknown method: {method}')
 
 
 def on_bus_acquired(conn, name, user_data=None):
