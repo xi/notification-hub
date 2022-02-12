@@ -5,8 +5,8 @@ Distraction-free notification daemon for linux inspired by github.
 -	Notifications are never displayed directly on screen to avoid distraction.
 -	If there are notifications, a status indicator is displayed. Clicking on that
 	indicator reveals the current notifications in a menu.
--	Notifications are group by application. Only the latest notification for each
-	application is shown.
+-	Notifications are grouped by application. Only the latest notification for
+	each application is shown.
 -	Clicking on a notification removes it from the menu.
 
 ## Dependencies
@@ -67,8 +67,8 @@ instead. But still, for some cases they are just perfect.
 
 What ever the reasons, we now have a situation where application authors have no
 clear guidance on how to implement status indicators and therefore don't do it.
-So if you disable notification (because you hate them) and a chat program has no
-status indicator, there is just no way to get notified of new messages.
+So if you disable notifications (because you hate them) and a chat program has
+no status indicator, there is just no way to get notified of new messages.
 
 The silver lining here is that notifications and status are somewhat related.
 For example, you can have a status indicator that only displays whether there
