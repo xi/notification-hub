@@ -114,6 +114,8 @@ def on_call(
     if method == 'GetCapabilities':
         # announce fake capabilities to avoid firefox fallback
         reply = GLib.Variant('(as)', [['actions', 'body', 'body-hyperlinks']])
+        invocation.return_value(reply)
+        conn.flush()
     elif method == 'Notify':
         on_add_notification({
             'app_name': params[0],
@@ -125,19 +127,19 @@ def on_call(
             'hints': params[6],
             'expire_timeout': params[7],
         }, next_id)
-        reply = GLib.Variant('(u)', [next_id])
+        invocation.return_value(GLib.Variant('(u)', [next_id]))
+        conn.flush()
         next_id += 1
     elif method == 'CloseNotification':
-        on_close_notification(*params)
-        reply = None
+        on_close_notification(params[0])
+        invocation.return_value(None)
+        conn.flush()
     elif method == 'GetServerInformation':
         info = ['notification-hub', 'xi', __version__, '1.2']
-        reply = GLib.Variant('(ssss)', info)
+        invocation.return_value(GLib.Variant('(ssss)', info))
+        conn.flush()
     else:
         print(f'Unknown method: {method}')
-        return
-    invocation.return_value(reply)
-    conn.flush()
 
 
 def on_bus_acquired(conn, name, user_data=None):
