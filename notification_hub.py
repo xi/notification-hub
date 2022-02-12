@@ -59,18 +59,6 @@ def clear_thread(item, key):
         indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
 
 
-def format_label(params):
-    desktop_entry = params['hints'].get('desktop-entry')
-    _app_name = params['app_name'] or desktop_entry
-    if _app_name:
-        if params['summary'] != _app_name:
-            return '%s: %s' % (_app_name, params['summary'])
-        else:
-            return '%s: %s' % (_app_name, params['body'][:40])
-    else:
-        return params['summary']
-
-
 def matches_rule(params, rule):
     for key, pattern in rule.items():
         if key == 'hints':
@@ -86,9 +74,12 @@ def on_add_notification(params, id):
     if any(matches_rule(params, rule) for rule in IGNORE):
         return
 
-    label = format_label(params)
-    key = params['hints'].get('desktop-entry', params['app_name'])
-    thread = threads.get(key)
+    app_name = params['hints'].get('desktop-entry', params['app_name'])
+    thread = threads.get(app_name)
+    if params['summary'] == app_name:
+        label = f'{app_name}: {params["body"][:40]}'
+    else:
+        label = f'{app_name}: {params["summary"]}'
 
     if thread:
         if params['replaces_id'] in thread['ids']:
@@ -97,12 +88,12 @@ def on_add_notification(params, id):
         thread['menuitem'].set_label(label)
     else:
         item = Gtk.MenuItem(label=label)
-        item.connect('activate', clear_thread, key)
+        item.connect('activate', clear_thread, app_name)
         menu.append(item)
         menu.show_all()
         indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
 
-        threads[key] = {
+        threads[app_name] = {
             'menuitem': item,
             'ids': {id},
         }
