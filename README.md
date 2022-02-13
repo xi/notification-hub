@@ -74,3 +74,8 @@ The silver lining here is that notifications and status are somewhat related.
 For example, you can have a status indicator that only displays whether there
 are any new notifications. This project is an experiment around exactly that
 idea.
+
+## Similar projects
+
+-	[Rofication](https://github.com/DaveDavenport/Rofication) has similar goals
+	but does not use StatusNotifierItem
