@@ -1,6 +1,6 @@
 # Notification Hub
 
-Distraction-free notification daemon for linux inspired by github.
+Distraction-free notification daemon for simple linux desktops.
 
 -	Notifications are never displayed directly on screen to avoid distraction.
 -	If there are notifications, a status indicator is displayed. Clicking on that
