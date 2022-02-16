@@ -40,8 +40,8 @@ and completely non-distracting. A changing status indicator is just subtle
 enough to be noticeable while staying out of the way.
 
 Unfortunately, while the linux world has pretty much settled on a [standard for
-notifications](https://developer.gnome.org/notification-spec/), status
-indicators are in peril:
+notifications](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html),
+status indicators are in peril:
 
 X11 protocols such as
 [`_NET_WM_STATE_DEMANDS_ATTENTION`](https://specifications.freedesktop.org/wm-spec/wm-spec-latest.html)
