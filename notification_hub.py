@@ -82,9 +82,7 @@ def on_add_notification(params, id):
         label = f'{app_name}: {params["summary"]}'
 
     if thread:
-        if params['replaces_id'] in thread['ids']:
-            thread['ids'].remove(params['replaces_id'])
-        thread['ids'].add(id)
+        thread['id'] = id
         thread['menuitem'].set_label(label)
     else:
         item = Gtk.MenuItem(label=label)
@@ -95,16 +93,14 @@ def on_add_notification(params, id):
 
         threads[app_name] = {
             'menuitem': item,
-            'ids': {id},
+            'id': id,
         }
 
 
 def on_close_notification(id):
     for key, thread in list(threads.items()):
-        if id in thread['ids']:
-            thread['ids'].remove(id)
-            if not thread['ids']:
-                clear_thread(thread['menuitem'], key)
+        if id == thread['id']:
+            clear_thread(thread['menuitem'], key)
 
 
 def on_call(

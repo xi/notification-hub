@@ -17,7 +17,7 @@ Distraction-free notification daemon for simple linux desktops.
 
 ## Known Limitations
 
--	Only supports `app_name`, `replaces_id`, and `summary`. Everything else
+-	Only supports `app_name` and `summary`. Everything else
 	(expiration, icons, HTML body, actions) is ignored.
 -	Lies about the supported features to other software to avoid fallbacks (e.g.
 	in firefox)
