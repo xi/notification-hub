@@ -10,5 +10,4 @@ MemoryDenyWriteExecute=yes
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes
-PrivateNetwork=yes
 PrivateTmp=yes
