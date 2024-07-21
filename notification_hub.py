@@ -77,7 +77,7 @@ def on_add_notification(params, id):
     app_name = params['hints'].get('desktop-entry', params['app_name'])
     thread = threads.get(app_name)
     if params['summary'] == app_name:
-        label = f'{app_name}: {params["body"][:40]}'
+        label = f'{app_name}: {params["body"]}'
     else:
         label = f'{app_name}: {params["summary"]}'
 
