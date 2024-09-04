@@ -9,5 +9,5 @@ ExecStart=/usr/bin/notification-hub
 MemoryDenyWriteExecute=yes
 NoNewPrivileges=yes
 ProtectSystem=strict
-ProtectHome=yes
+InaccessiblePaths=/home
 PrivateTmp=yes
