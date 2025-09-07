@@ -12,8 +12,7 @@ Distraction-free notification daemon for simple linux desktops.
 ## Dependencies
 
 -	[python3-gi](https://docs.gtk.org/gio/)
--	gir1.2-gtk-3.0
--	[gir1.2-ayatanaappindicator3-0.1](https://lazka.github.io/pgi-docs/AyatanaAppIndicator3-0.1/classes/Indicator.html)
+-	[gir1.2-ayatanaappindicatorglib-2.0](https://lazka.github.io/pgi-docs/AyatanaAppIndicatorGlib-2.0/classes/Indicator.html)
 
 ## Known Limitations
 
