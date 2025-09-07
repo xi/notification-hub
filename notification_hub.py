@@ -4,13 +4,13 @@ import sys
 
 import gi
 
-gi.require_version('AyatanaAppIndicator3', '0.1')
+gi.require_version('AyatanaAppIndicatorGlib', '2.0')
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gio  # noqa
 from gi.repository import GLib  # noqa
 from gi.repository import Gtk  # noqa
-from gi.repository import AyatanaAppIndicator3 as AppIndicator3  # noqa
+from gi.repository import AyatanaAppIndicatorGlib as AppIndicator3  # noqa
 
 __version__ = '0.0.0'
 
@@ -52,10 +52,19 @@ menu = None
 threads = {}
 
 
-def clear_thread(item, key):
+def remove_menu_item(menu, key):
+    # menu items can only be removed by position
+    for i in range(menu.get_n_items()):
+        if menu.get_item_attribute_value(0, 'app-name').unpack() == key:
+            menu.remove(i)
+            return
+
+
+def clear_thread(_action, _, key):
     del threads[key]
-    menu.remove(item)
-    if len(menu) == 0:
+    remove_menu_item(menu, key)
+    actions.remove_action(key)
+    if menu.get_n_items() == 0:
         indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
 
 
@@ -85,10 +94,10 @@ def on_add_notification(params, id):
         thread['id'] = id
         thread['menuitem'].set_label(label)
     else:
-        item = Gtk.MenuItem(label=label)
-        item.connect('activate', clear_thread, app_name)
-        menu.append(item)
-        menu.show_all()
+        item = Gio.MenuItem.new(label, app_name)
+        actions.add_action_entries([(app_name, clear_thread)], app_name)
+        item.set_attribute([('app-name', 's', app_name)])
+        menu.append_item(item)
         indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
 
         threads[app_name] = {
@@ -100,7 +109,7 @@ def on_add_notification(params, id):
 def on_close_notification(id):
     for key, thread in list(threads.items()):
         if id == thread['id']:
-            clear_thread(thread['menuitem'], key)
+            clear_thread(None, None, key)
 
 
 def on_call(
@@ -169,8 +178,10 @@ if __name__ == '__main__':
     )
     indicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
     indicator.set_title('Notifications')
-    menu = Gtk.Menu()
+    menu = Gio.Menu()
     indicator.set_menu(menu)
+    actions = Gio.SimpleActionGroup()
+    indicator.set_actions(actions)
 
     try:
         loop = GLib.MainLoop()

@@ -4,7 +4,7 @@ pkgdesc='Distraction-free notification daemon for simple linux desktops'
 arch=('all')
 url='https://github.com/xi/notification-hub'
 license='MIT'
-depends=(python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1)
+depends=(python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicatorglib-2.0)
 
 package() {
 	install -Dm 755 notification_hub.py "$pkgdir/usr/bin/notification-hub"
