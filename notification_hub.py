@@ -81,7 +81,11 @@ def on_add_notification(params, id):
     if any(matches_rule(params, rule) for rule in IGNORE):
         return
 
-    app_name = params['hints'].get('desktop-entry', params['app_name'])
+    app_name = (
+        str(params['hints'].get('desktop-entry', ''))
+        or params['app_name']
+        or f'${id}'
+    )
     thread = threads.get(app_name)
     if params['summary'] == app_name:
         label = f'{app_name}: {params["body"]}'
