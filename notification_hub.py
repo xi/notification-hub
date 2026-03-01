@@ -93,19 +93,18 @@ def on_add_notification(params, id):
         label = f'{app_name}: {params["summary"]}'
 
     if thread:
-        thread['id'] = id
-        thread['menuitem'].set_label(label)
-    else:
-        item = Gio.MenuItem.new(label, app_name)
-        actions.add_action_entries([(app_name, clear_thread)], app_name)
-        item.set_attribute([('app-name', 's', app_name)])
-        menu.append_item(item)
-        indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
+        remove_menu_item(menu, app_name)
 
-        threads[app_name] = {
-            'menuitem': item,
-            'id': id,
-        }
+    item = Gio.MenuItem.new(label, app_name)
+    actions.add_action_entries([(app_name, clear_thread)], app_name)
+    item.set_attribute([('app-name', 's', app_name)])
+    menu.append_item(item)
+    indicator.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
+
+    threads[app_name] = {
+        'menuitem': item,
+        'id': id,
+    }
 
 
 def on_close_notification(id):
