@@ -6,8 +6,10 @@ PartOf=graphical-session.target
 Type=dbus
 BusName=org.freedesktop.Notifications
 ExecStart=/usr/bin/notification-hub
+
+LockPersonality=yes
 MemoryDenyWriteExecute=yes
 NoNewPrivileges=yes
-ProtectSystem=strict
+SystemCallFilter=@system-service
 InaccessiblePaths=/home
 PrivateTmp=yes
